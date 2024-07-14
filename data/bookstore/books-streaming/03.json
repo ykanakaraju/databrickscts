@@ -1,0 +1,4 @@
+{"book_id":"B05","title":"Fluent Python","author":"Luciano Ramalho","category":"Computer Science","price":"35","row_time":"2022-11-06T18:12:05.419+01:00","row_status":"UPDATE"}
+{"book_id":"B07","title":"The Hundred-Page Machine Learning","author":"Andriy Burkov","category":"Computer Science","price":"33","row_time":"2022-11-06T18:11:49.506+01:00","row_status":"INSERT"}
+{"book_id":"B08","title":"Quantum Computing for Everyone","author":"Chris Bernhardt","category":"Computer Science","price":"41","row_time":"2022-11-06T18:11:49.506+01:00","row_status":"INSERT"}
+{"book_id":"B09","title":"Advanced Data Structures","author":"Peter Brass","category":"Computer Science","price":"24","row_time":"2022-11-06T18:11:49.506+01:00","row_status":"INSERT"}

@@ -1,0 +1,5 @@
+{"book_id":"B10","title":"Beginning Database Design Solutions","author":"Rod Stephens","category":"Computer Science","price":"35","row_status":"UPDATE","row_time":"2022-11-11T18:18:53.034+01:00"}
+{"book_id":"B12","row_status":"DELETE","row_time":"2022-11-11T18:18:53.034+01:00"}
+{"book_id":"B19","title":"Introduction to Modeling and Simulation","author":"Mark W. Spong","category":"Computer Science","price":"25","row_time":"2022-11-11T18:12:42.335+01:00","row_status":"INSERT"}
+{"book_id":"B20","title":"Robot Modeling and Control","author":"Mark W. Spong","category":"Computer Science","price":"30","row_time":"2022-11-11T18:12:42.335+01:00","row_status":"INSERT"}
+{"book_id":"B21","title":"Turing's Vision: The Birth of Computer Science","author":"Chris Bernhardt","category":"Computer Science","price":"35","row_time":"2022-11-11T18:12:42.335+01:00","row_status":"INSERT"}

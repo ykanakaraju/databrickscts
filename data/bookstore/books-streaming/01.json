@@ -1,0 +1,3 @@
+{"book_id":"B01","title":"The Soul of a New Machine","author":"Tracy Kidder","category":"Computer Science","price":"49","row_time":"2022-11-04T18:11:33.507+01:00","row_status":"INSERT"}
+{"book_id":"B02","title":"Learning JavaScript Design Patterns","author":"Addy Osmani","category":"Computer Science","price":"28","row_time":"2022-11-04T18:11:33.507+01:00","row_status":"INSERT"}
+{"book_id":"B03","title":"Make Your Own Neural Network","author":"Tariq Rashid","category":"Computer Science","price":"35","row_time":"2022-11-04T18:11:33.507+01:00","row_status":"INSERT"}

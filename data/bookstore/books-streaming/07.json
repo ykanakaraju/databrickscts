@@ -1,0 +1,6 @@
+{"book_id":"B02","title":"Learning JavaScript Design Patterns","author":"Addy Osmani","category":"Computer Science","price":"15","row_status":"UPDATE","row_time":"2022-11-10T18:17:50.236+01:00"}
+{"book_id":"B14","row_status":"DELETE","row_time":"2022-11-10T18:17:50.236+01:00"}
+{"book_id":"B10","title":"Beginning Database Design Solutions","author":"Rod Stephens","category":"Computer Science","price":"33","row_status":"UPDATE","row_time":"2022-11-10T18:17:50.236+01:00"}
+{"book_id":"B16","title":"Hands-On Deep Learning Algorithms with Python","author":"Sudharsan Ravichandiran","category":"Computer Science","price":"25","row_status":"UPDATE","row_time":"2022-11-10T18:17:50.236+01:00"}
+{"book_id":"B17","title":"Neural Network Methods in Natural Language Processing","author":"Yoav Goldberg","category":"Computer Science","price":"30","row_status":"UPDATE","row_time":"2022-11-10T18:17:50.236+01:00"}
+{"book_id":"B18","title":"Understanding digital signal processing","author":"Richard Lyons","category":"Computer Science","price":"35","row_status":"INSERT","row_time":"2022-11-10T18:17:50.236+01:00"}

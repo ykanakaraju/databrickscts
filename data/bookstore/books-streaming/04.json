@@ -1,0 +1,4 @@
+{"book_id":"B09","row_status":"DELETE","row_time":"2022-11-07T18:17:50.236+01:00"}
+{"book_id":"B10","title":"Beginning Database Design Solutions","author":"Rod Stephens","category":"Computer Science","price":"44","row_time":"2022-11-07T17:36:31.241+01:00","row_status":"INSERT"}
+{"book_id":"B11","title":"Business Intelligence for Dummies","author":"Swain Scheps","category":"Computer Science","price":"38","row_time":"2022-11-07T17:36:31.241+01:00","row_status":"INSERT"}
+{"book_id":"B12","title":"Big Data in Practice","author":"Bernard Marr","category":"Computer Science","price":"30","row_time":"2022-11-07T17:36:31.241+01:00","row_status":"INSERT"}

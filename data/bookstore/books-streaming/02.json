@@ -1,0 +1,6 @@
+{"book_id":"B02","title":"Learning JavaScript Design Patterns","author":"Addy Osmani","category":"Computer Science","price":"40","row_status":"UPDATE","row_time":"2022-11-05T18:17:50.236+01:00"}
+{"book_id":"B03","title":"Make Your Own Neural Network","author":"Tariq Rashid","category":"Computer Science","price":"30","row_time":"2022-11-05T18:11:33.507+01:00","row_status":"UPDATE"}
+{"book_id":"B01","row_status":"DELETE","row_time":"2022-11-05T18:17:50.236+01:00"}
+{"book_id":"B04","title":"Robot Dynamics and Control","author":"Mark W. Spong","category":"Computer Science","price":"20","row_time":"2022-11-05T18:12:05.419+01:00","row_status":"INSERT"}
+{"book_id":"B05","title":"Fluent Python","author":"Luciano Ramalho","category":"Computer Science","price":"47","row_time":"2022-11-05T18:12:05.419+01:00","row_status":"INSERT"}
+{"book_id":"B06","title":"Deep Learning with Python","author":"François Chollet","category":"Computer Science","price":"22","row_time":"2022-11-05T18:12:05.419+01:00","row_status":"INSERT"}
