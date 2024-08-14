@@ -1,0 +1,786 @@
+
+  Databricks
+  ----------
+
+   Databricks Basics
+   PySpark Essentials
+	- Spark basics
+	- Spark SQL Crash course
+	- Structured Streaming basics
+   Databricks Lakehouse Platform 
+	– Delta Lake Basics
+	- Delta Lake Features
+   ELT with Spark SQL and Python
+   Incremental Data Processing 
+	- Structured Streaming
+	- AutoLoader
+   Delta Live Tables - Production pipelines	
+   Data Governance
+
+
+  Materials
+  ---------
+  - PDF presentations
+  - Code Modules (PySpark)
+  - Databricks Notebooks (DBC files)
+  - Class notes
+  - Github: https://github.com/ykanakaraju/databrickscts
+ 
+
+  Getting started with Spark on Databricks
+  ----------------------------------------   
+   ** Databricks Community Edition (free edition)
+ 		
+	Signup: https://www.databricks.com/try-databricks
+		Screen 1: Fill up the details with valid email address
+		Screen 2: Click on "Get started with Community Edition" link (Not the 'Continue' button)
+
+	Login: https://community.cloud.databricks.com/login.html
+
+	Downloading a file from Databricks
+	----------------------------------
+		/FileStore/<FILEPATH>
+		https://community.cloud.databricks.com/files/<FILEPATH>?o=1072576993312365
+
+		Example:
+		dbfs:/FileStore/output/wc/part-00000
+		https://community.cloud.databricks.com/files/output/wc/part-00000?o=1072576993312365
+
+		dbfs:/FileStore/output/wordcount1/part-00000
+		https://community.cloud.databricks.com/files/output/wordcount1/part-00000?o=1072576993312365
+
+
+ 	Enabling DBFS File browser
+	--------------------------
+	<your account (top-right) -> Settings -> Advanced -> Other -> DBFS File Browser (enable it)
+
+  Spark
+  -----
+
+    Spark is an open-source in-memory distributed computing framework.
+
+	-> Spark is written in Scala
+
+	-> Spark is a ployglot  
+		-> Spark applications can be written in multiple languages
+		-> Supports Python, R, Scala, Java
+
+	-> Spark can run on multiple cluster managers
+		-> Supports local, spark standalone, YARN, Mesos, Kubernetes
+
+    Spark is a unified framework.
+		
+	Spark provides a consistent set of APIs for performing different analytics workloads
+        using the same execution engine and some well defined data abstractions and operations.
+
+   	Batch Analytics of unstructured data	-> Spark Core API (low-level api)
+	Batch Analytics of structured data 	-> Spark SQL
+	Streaming Analytics (real time)		-> Spark Streaming (DStreams API), Structured Streaming
+	Predictive analytics (ML)		-> Spark MLLib  (mllib & ml)
+	Graph parallel computations  		-> Spark GraphX
+
+
+   Spark Architecture
+   ------------------
+
+	1. Cluster Manager (CM)
+		-> Applications are submitted to CMs
+		-> Allocates containers for lauching driver and executors on the cluster. 
+		-> Spark supports multiple CMs
+			-> local, standalone, YARN, Mesos, Kubernetes		
+
+	2. Driver
+		-> Master process
+		-> Runs the 'SparkContext' object
+		-> Manages the user code and sends the tasks to the executors as per the code. 
+
+		Deploy Modes:
+		-> Where to run the driver process
+		1. Client : default, driver runs on the client. 
+		2. Cluster: driver runs on one of the nodes on the cluster.
+
+	3. SparkContext
+		-> Is an application context
+		-> Starting point of execution
+		-> Is the link between the driver and tasks running on the executors
+
+	4. Executors
+		-> Receives the tasks from the Driver
+		-> All tasks run the same code but on different partitions of the data
+		-> The status of tasks are reported to the driver. 	
+
+
+   RDD (Resilient Distributed Dataset)
+   -----------------------------------
+	-> RDD is the fundamental data abstraction of Spark
+
+	-> RDD is a collection of distributed in-memory partitions.
+	    -> Each partition is a collection of objects of some type.
+
+	-> RDDs are immutable
+
+	-> RDDs are lazily evaluated
+	   -> Transformations does not cause execution.
+	   -> Action commands trigger execution.
+
+   Creating RDDs
+   -------------
+
+	Three ways:
+
+	1. Creating an RDD from external data file
+
+		rdd1 = sc.textFile(<dataPath>, 4)
+
+		default Number of partitions: sc.defaultMinPartition
+		  sc.defaultMinPartition = 2, if number of cores >= 2
+					   1, otherwise
+
+	2. Creating an RDD from programmatic data
+
+		rdd1 = sc.parallelize([2,1,3,2,4,3,5,4,6,7,5,6,7,6,8,8,9,0], 2)
+
+		default Number of partitions: sc.defaultParallelism
+		sc.defaultParallelism = number of CPU cores allocated.
+
+	3. By applying transformations on existing RDDs
+
+		rdd2 = rdd1.map(lambda x: x*10)
+
+   RDD Operations
+   --------------
+    Two types of operations
+
+	1. Transformations
+		-> Transformations return RDDs
+		-> Transformations does not cause execution of RDDs
+		-> Cause lineage DAGs to be created
+
+	2. Actions
+		-> Triggers execution of RDDs
+		-> Produces output by sending a Job to the cluster
+
+
+   RDD Lineage DAG
+   ---------------
+    Driver maintains a Lineage DAG for every RDD.
+    Lineage DAG is a heirarchy of dependencies of RDDs all the way starting from the very first RDD.	
+    Lineage DAG is a logical plan on how to create the RDD.
+
+	rddFile = sc.textFile("E:\\Spark\\wordcount.txt", 4)
+	Lineage DAG: (4) rddFile -> sc.textFile on E:\\Spark\\wordcount.txt
+
+	rddWords = rddFile.flatMap(lambda x: x.split())
+	Lineage DAG: (4) rddWords -> rddFile.flatMap -> sc.textFile
+
+	rddPairs = rddWords.map(lambda x: (x, 1))
+	Lineage DAG: (4) rddPairs -> rddWords.map -> rddFile.flatMap -> sc.textFile
+
+	rddWc = rddPairs.reduceByKey(lambda x, y: x + y)
+	Lineage DAG: (4) rddWc -> rddPairs.reduceByKey -> rddWords.map -> rddFile.flatMap -> sc.textFile
+
+
+  Databricks Basics
+  -----------------
+	
+	1. Compute - Spin up cluster resources
+		
+		1. All purpose clusters - continuously running, persistent cluster
+		2. Job clusters - spinned up to execute a job and then terminated	
+
+	2. Catalog
+		-> All data is stored in Catalog
+		-> All local files are store in /FileStore directory
+		-> Default hive warehouse directory : /user/hive/warehouse
+
+	3. Workspace
+		-> All the notebooks are managed in the workspace
+
+
+  Databricks 'dbutils'
+  --------------------
+
+	'help' command
+	------------
+	dbutils.help()
+	dbutils.fs.help()
+	dbutils.fs.help('ls')
+
+
+	'ls' command
+	------------
+	dbutils.fs.ls("/")
+	dbutils.fs.ls("/FileStore")
+		list paths => [ d[0] for d in dbutils.fs.ls("/FileStore")]
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mkdirs' command
+	----------------
+	dbutils.fs.mkdirs("/FileStore/testdata2")
+	dbutils.fs.ls("/FileStore")
+
+
+	'cp' command to copy files between DBFS directories
+	---------------------------------------------------
+	dbutils.fs.cp("/FileStore/testdata/csv/2011_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2012_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2013_summary.csv", "/FileStore/testdata2")
+
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mv' command for moving or renaming files
+	------------------------------------------
+	dbutils.fs.help('mv')
+
+	dbutils.fs.mv("/FileStore/testdata/csv", "/FileStore/testdata3", recurse=True)
+	dbutils.fs.ls('/FileStore/testdata3')
+
+	dbutils.fs.mv('/FileStore/testdata3/2011_summary.csv', '/FileStore/testdata3/2011_summary_renamed.csv')
+
+
+	'rm' command to remove files & directories from DBFS
+	-----------------------------------------------------
+	dbutils.fs.rm('/FileStore/testdata3/2011_summary_renamed.csv')
+	dbutils.fs.rm('/FileStore/testdata3/', recurse=True)
+  
+
+  ================================
+     Spark SQL (pyspark.sql)
+  ================================ 
+
+    -> High Level API built on top of Spark Core
+
+	File Formats : Parquet (default), ORC, JSON, CSV (delimited text), Text
+	JDBC Format  : RDBMS, NoSQL
+	Hive Format  : Hive Warehouse
+
+   SparkSession
+   ------------
+
+	-> Starting point of execution
+	-> Represents a user session (SparkSession) running inside an application (SparkContext)
+	-> Each SparkSession can have its own configuration
+
+	spark = SparkSession \
+    		.builder \
+    		.appName("Basic Dataframe Operations") \
+    		.config("spark.master", "local") \
+    		.getOrCreate()   
+
+
+	spark = SparkSession \
+    		.builder \
+    		.appName("Basic Dataframe Operations") \
+    		.config("spark.master", "local") \
+		.config("spark.sql.warehouse.dir", <warehousePath>) \
+		.enableHiveSupport() \
+    		.getOrCreate()  
+
+
+   DataFrame (DF)
+   --------------
+	-> Main data abstraction of Spark SQL
+	-> Is a collection of distributed in-memory partitions
+	-> Immutable
+	-> Lazily evaluated
+
+	-> DataFrame is a collection of "Row" objects.
+
+	-> DataFrame contains two components:
+		-> Data    : Collection of 'Row' objects
+		-> Schema  : StructType object
+
+			StructType(
+			   [
+				StructField('age', LongType(), True), 
+				StructField('gender', StringType(), True), 
+				StructField('name', StringType(), True), 
+				StructField('phone', StringType(), True), 
+				StructField('userid', LongType(), True)
+			   ]
+			)
+ 	
+	
+
+   Basic steps in creating a Spark SQL Application
+   -----------------------------------------------
+
+	1. Read/load data from some data-source into a DataFrame 		
+
+		#df1 = spark.read.format("json").load(inputData)
+		#df1 = spark.read.load(inputData, format="json")
+		df1 = spark.read.json(inputData)
+
+
+	2. Transform the DF using DF transformation methods or using SQL
+
+	        Using DF transformation methods
+		-------------------------------	
+		 df2 = df1.select("userid", "name", "age", "gender", "phone") \
+        		.where("age is not null") \
+        		.orderBy("gender", "age") \
+        		.groupBy("age").count() \
+        		.limit(4)
+
+
+		Using SQL
+		---------		
+		df1.createOrReplaceTempView("users")
+		spark.catalog.listTables()
+
+		qry = """select age, count(*) as count
+			from users
+			where age is not null
+			group by age
+			order by age
+			limit 4"""
+					
+		df3 = spark.sql(qry)
+		df3.show()
+
+		NOTE: You can drop temp-view:  
+		      -> spark.catalog.dropTempView("users")
+
+
+	3. Save the dataframe into some external destination (such as files/databases/hive etc)
+
+		df2.write.format("json").save("/FileStore/output/json")
+		df2.write.save("/FileStore/output/json", format="json")
+		df2.write.json("/FileStore/output/json")
+
+
+ Save Modes
+  ----------
+    -> Control the behaviour when saving a DF into an existing directory.
+
+	1. errorIfExists (default)
+	2. ignore
+	3. append
+	4. overwrite
+
+	df3.write.mode("overwrite").json(outputPath)
+	df3.write.json(outputPath, mode="overwrite")
+
+
+  LocalTempView & GlobalTempView
+  -------------------------------	
+	LocalTempView 
+	   -> Local to a specific SparkSession
+	   -> Created using createOrReplaceTempView command
+
+		df1.createOrReplaceTempView("users")
+
+	GlobalTempView
+	   -> Can be accessed from multiple SparkSessions within the application
+	   -> Tied to "global_temp" database
+	   -> Created using createOrReplaceGlobalTempView command
+
+		df1.createOrReplaceGlobalTempView ("gusers")
+
+
+	select age, count(1) as count
+	from global_temp.gusers
+	where age is not null
+	group by age
+	order by age
+	limit 4
+
+
+  DataFrame Transformations
+  -------------------------
+
+  1. select
+
+	df2 = df1.select("ORIGIN_COUNTRY_NAME", "DEST_COUNTRY_NAME", "count")
+
+
+	df2 = df1.select( 
+		  col("ORIGIN_COUNTRY_NAME").alias("origin"),
+                  col("DEST_COUNTRY_NAME").alias("destination"),
+                  expr("count").cast("int"),
+                  expr("count + 10 as newCount"),
+                  expr("count > 200 as highFrequecy"),
+                  expr("ORIGIN_COUNTRY_NAME = DEST_COUNTRY_NAME as domestic"))
+
+
+  2. where / filter
+
+	df3 = df2.where("domestic = false and count > 1000")
+	df3 = df2.filter("domestic = false and count > 1000")
+
+	df3 = df2.filter( col("count") > 1000 )
+
+
+  3. orderBy / sort
+
+	df3 = df2.orderBy("count", "origin")
+	df3 = df2.orderBy(desc("count"), asc("origin"))
+	df3 = df2.sort(desc("count"), asc("origin"))
+
+  
+
+  4. groupBy  => returns a pyspark.sql.group.GroupedData object. Use an aggregation function to return a DataFrame.
+	
+	df3 = df2.groupBy("highFrequecy", "domestic").count()
+	df3 = df2.groupBy("highFrequecy", "domestic").sum("count")
+	df3 = df2.groupBy("highFrequecy", "domestic").max("count")
+	df3 = df2.groupBy("highFrequecy", "domestic").avg("count")
+
+	df3 = df2.groupBy("highFrequecy", "domestic") \
+        	.agg( count("count").alias("count"),
+              		sum("count").alias("sum"),
+              		max("count").alias("max"),
+              		round(avg("count"), 2).alias("avg")
+            	  )
+
+   5. limit	
+
+	df2 = df1.limit(10)
+
+
+   6. selectExpr
+
+	df2 = df1.selectExpr("DEST_COUNTRY_NAME as destination", 
+                     "ORIGIN_COUNTRY_NAME as origin",
+                     "count",
+                     "count + 10 as newCount",
+                     "count > 200 as highFrequency",
+                     "DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME as domestic")
+
+	df2.show()
+	df2.printSchema()
+
+  7. withColumn & withColumnRenamed
+
+	df3 = df1.withColumn("newCount", expr("count + 10")) \
+         	.withColumn("highFrequency", expr("count > 200")) \
+         	.withColumn("domestic", expr("DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME")) \
+         	.withColumnRenamed("DEST_COUNTRY_NAME", "destination") \
+         	.withColumnRenamed("ORIGIN_COUNTRY_NAME", "origin") \
+            	.withColumn("countryCode", lit(91))
+
+	df3.show(5)
+        ---------------------
+
+	df4 = df3.withColumn("ageGroup", when(expr("age < 13"), "child")
+                                .when(expr("age < 20"), "teenager")
+                                .when(expr("age < 60"), "adult")
+                                .otherwise("senior") )
+
+	df4.show()
+
+
+  8.  udf (user defined function)
+
+		def getAgeGroup( age ):
+			if (age <= 12):
+				return "child"
+			elif (age >= 13 and age <= 19):
+				return "teenager"
+			elif (age >= 20 and age < 60):
+				return "adult"
+			else:
+				return "senior"
+
+		get_age_group = udf(getAgeGroup, StringType())
+
+		df4 = df3.withColumn("ageGroup", get_age_group(col("age")) )
+
+		df4.show()
+
+		----------------------------------------
+
+		@udf (returnType = StringType())
+		def getAgeGroup( age ):
+			if (age <= 12):
+				return "child"
+			elif (age >= 13 and age <= 19):
+				return "teenager"
+			elif (age >= 20 and age < 60):
+				return "adult"
+			else:
+				return "senior"
+
+		df4 = df3.withColumn("ageGroup", getAgeGroup(col("age")) )
+	
+		--------------------------------------------
+		# applying UDF in SQL
+
+		def getAgeGroup( age ):
+			if (age <= 12):
+				return "child"
+			elif (age >= 13 and age <= 19):
+				return "teenager"
+			elif (age >= 20 and age < 60):
+				return "adult"
+			else:
+				return "senior"
+
+
+		spark.udf.register("get_age_group", getAgeGroup, StringType())
+		
+		spark.catalog.listFunctions()
+
+		qry = "select id, name, age, get_age_group(age) as ageGroup from users"
+
+		df5 = spark.sql(qry)
+		df5.show()
+
+
+   9. drop	=> drops/excludes the specified columns
+
+
+		df3 = df2.drop("newCount", "highFrequency")
+
+		df3.printSchema()
+		df3.show(4)
+
+
+   10.  dropna	=> drops the Rows that has null values in any column or specified columns
+	fillna  => fills with specified values of Rows that has null values in any column or specified columns
+
+		usersDf = spark.read.json("E:\\PySpark\\data\\users.json")
+		usersDf.show()
+
+		df3 = usersDf.dropna()  # drop rows if there is null in any column
+		df3 = usersDf.dropna(subset=["phone", "age"])  # drop rows if there is null in phone or age columns
+
+		df3.show()
+
+		-------------------------
+		userDf2 = usersDf \
+    		.fillna("0000000000", subset=["phone"]) \
+    		.fillna("ANONYMOUS", subset=["name"]) \
+    		.fillna(0)
+
+
+   11. dropDuplicates => drop duplicates based on any column or specified columns
+
+
+		listUsers = [(1, "Raju", 5),
+					 (1, "Raju", 5),
+					 (3, "Raju", 5),
+					 (4, "Raghu", 35),
+					 (4, "Raghu", 35),
+					 (6, "Raghu", 35),
+					 (7, "Ravi", 70)]
+
+		df3 = spark.createDataFrame(listUsers, ["id", "name", "age"])
+		df3.show()
+
+		df4 = df3.dropDuplicates()
+		df4 = df3.dropDuplicates(["name","age"])
+
+		df4.show()
+
+
+   12. distinct => returns distinct rows
+
+		listUsers = [(1, "Raju", 5),
+			(1, "Raju", 5),
+			(3, "Raju", 5),
+			(4, "Raghu", 35),
+			(4, "Raghu", 35),
+			(6, "Raghu", 35),
+			(7, "Ravi", 35)]
+
+
+		df3 = spark.createDataFrame(listUsers, ["id", "name", "age"])
+		df3.show()
+
+		df4 = df3.distinct()
+		df4.show() 
+
+
+      Q. How many unique DEST_COUNTRY_NAME values are there in df1??	
+
+		df1.select("DEST_COUNTRY_NAME").distinct().count()
+		df1.dropDuplicates(["DEST_COUNTRY_NAME"]).count()
+
+
+   13. randomSplit
+
+		dfList = df1.randomSplit([0.5, 0.5], 464)
+		print( dfList[0].count(), dfList[1].count() )
+
+   14. sample
+   
+		df2 = df1.sample(True, 0.65)		# with-replacement sampling
+		df2 = df1.sample(True, 1.65)		# fraction > 1 is allowed
+		df2 = df1.sample(True, 0.65, 42342)	# 42342 is a seed
+
+		df2 = df1.sample(False, 0.65)		# without-replacement sampling
+		df2 = df1.sample(False, 1.65)		# ERROR: fraction > 1 is NOT allowed
+		df2 = df1.sample(False, 0.65, 42342)    # 42342 is a seed
+
+
+   15. union, intersect, subtract
+
+		df4 = df2.union(df3)
+		df4.show()
+		df4.count()
+		df4.rdd.getNumPartitions()
+		df4.write.mode("overwrite").csv("E:\\PySpark\\output\\union")
+
+		df5 = df4.intersect(df3)
+		df5.show()
+		df5.rdd.getNumPartitions()
+
+		df6 = df4.subtract(df3)
+		df6.show()
+		df6.rdd.getNumPartitions()
+
+   16. repartition
+
+		df2 = df1.repartition(6)
+		df2.rdd.getNumPartitions()
+
+		df3 = df2.repartition(3)
+		df3.rdd.getNumPartitions()
+
+		df4 = df2.repartition(4, col("DEST_COUNTRY_NAME"))
+		df4.rdd.getNumPartitions()
+
+		df5 = df2.repartition(col("DEST_COUNTRY_NAME"))
+		df5.rdd.getNumPartitions()
+
+   17. coalesce
+
+		df6 = df2.coalesce(10)  # df2 - 6 partitions
+		df6.rdd.getNumPartitions()
+
+
+   18.  Window functions  (refer to Databricks notebook)
+
+
+   19. join  -> discussed as a separate topic.  
+
+  
+
+
+
+
+  Working with different file formats
+  -----------------------------------
+
+  JSON
+	read
+		df1 = spark.read.format("json").load(inputPath)
+		df1 = spark.read.load(inputPath, format="json")
+		df1 = spark.read.json(inputPath)
+		df1 = spark.read.json(inputPath, multiLine=True)
+
+	write
+		df3.write.format("json").save(outputPath)
+		df3.write.save(outputPath, format="json")
+		df3.write.json(outputPath)	
+
+  Parquet (default)
+	read
+		df1 = spark.read.format("parquet").load(inputPath)
+		df1 = spark.read.load(inputPath, format="parquet")
+		df1 = spark.read.parquet(inputPath)
+
+	write
+		df3.write.format("parquet").save(outputPath)
+		df3.write.save(outputPath, format="parquet")
+		df3.write.parquet(outputPath)
+
+
+  ORC
+	read
+		df1 = spark.read.format("orc").load(inputPath)
+		df1 = spark.read.load(inputPath, format="orc")
+		df1 = spark.read.orc(inputPath)
+
+	write
+		df3.write.format("orc").save(outputPath)
+		df3.write.save(outputPath, format="orc")
+		df3.write.orc(outputPath)	
+
+
+  CSV (delimited text)
+
+	read
+		df1 = spark.read.format("csv").option("header", True).option("inferSchema", True).load(inputPath)
+		df1 = spark.read.format("csv").load(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True, sep="|")
+
+		my_schema = StructType(
+    			[
+        			StructField('ORIGIN_COUNTRY_NAME', StringType(), True), 
+        			StructField('DEST_COUNTRY_NAME', StringType(), True), 
+        			StructField('count', IntegerType(), True)
+    			]
+		)
+
+		# use Apache Hive types
+		my_schema = "ORIGIN_COUNTRY_NAME STRING, DEST_COUNTRY_NAME STRING, count INT"
+
+		// using programmatic schema
+		df1 = spark.read.schema(my_schema).csv(inputPath, header=True)
+
+	write
+		df3.write.format("csv").save(outputPath, header=True)
+		df2.write.csv(outputPath, header=True)
+		df2.write.csv(outputPath, header=True, sep="|", mode="overwrite")
+
+
+  Text
+	read
+		df1 = spark.read.text(inputPath)
+
+	write
+		df1.write.text(outputPath)
+
+
+
+ Creating an RDD from DataFrame
+  ------------------------------
+	rdd1 = df1.rdd
+
+
+  Creating a DataFrame from an RDD
+  --------------------------------
+	listUsers = [(1, "Raju", 5),
+		(2, "Ramesh", 15),
+		(3, "Rajesh", 18),
+		(4, "Raghu", 35),
+		(5, "Ramya", 25),
+		(6, "Radhika", 35),
+		(7, "Ravi", 70)]
+
+	rdd1 = spark.sparkContext.parallelize(listUsers)
+
+	df1 = rdd1.toDF(["id", "name", "age"])
+
+	df1.show()
+	df1.printSchema()
+
+
+  Creating a DataFrame from programmatic data
+  --------------------------------------------
+	listUsers = [(1, "Raju", 5),
+		(2, "Ramesh", 15),
+		(3, "Rajesh", 18),
+		(4, "Raghu", 35),
+		(5, "Ramya", 25),
+		(6, "Radhika", 35),
+		(7, "Ravi", 70)]
+
+	df1 = spark.createDataFrame(listUsers, ["id", "name", "age"])
+	df1 = spark.createDataFrame(listUsers).toDF("id", "name", "age")
+
+
+
+
+
+
+
+
+
+
+
