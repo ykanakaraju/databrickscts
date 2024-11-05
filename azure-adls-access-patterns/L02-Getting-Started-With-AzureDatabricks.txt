@@ -1,0 +1,137 @@
+
+ Lab 2 - Getting started with Databricks on Azure
+ ------------------------------------------------ 
+ 
+  1. Create and launch 'Azure Databricks' workspace
+  
+	1.1 Login to Azure portal with your login credentials
+	
+	1.2 Search for and open 'Azure Databricks' service home page.
+	
+	1.3 Click on 'Create' button to open 'Create an Azure Databricks workspace' page.
+	
+	1.4 Fill the details as appropriate:
+	
+		Project Details
+			Resource group: 'Create new' -> Name: CTSDemoResouceGroup		
+		Instance Details
+			Workspace name: CTSDemoWorkspace
+			Region: East US
+			Pricing Tier: Standard (Apache Spark, Secure with Azure AD)		
+		Networking
+			Deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP): No 
+			Deploy Azure Databricks workspace in your own Virtual Network (VNet): No			
+		Click on 'Review + create' 		
+		Click on 'Create' 	
+		
+	1.5 Wait until the page shows that your 'Deployment is complete'
+	1.6 Click on 'Go to resource' to go to your Databricks workspace page
+	1.7 Click on 'Launch workspace' button to launch 'Azure Databricks' workspace	
+	
+	NOTE: In the above step, we are signing-in using 'Azure Active Directory SSO' account.
+	
+  2. Create a single node Databricks cluster	
+	
+	2.1 Click on 'New' -> 'Cluster' menu option
+		
+		Name: CTSDemoCluster (you can edit this in the heading)
+		Select 'Single Node' option
+		Node type: Standard_F4
+		Terminate after: 30 minutes
+	
+	2.2 Click on 'Create compute' button.
+	2.3 Wait until cluster status becomes active.
+	
+	
+  3. Upload data files
+  
+	3.1 Click on 'New' -> 'Add data'
+	3.2 Click on 'DBFS' button 
+	3.3 Drag and drop the files you want to upload
+	    -> Drop "retail_db" folder with data files provided to you.
+		
+	NOTE: To browse DBFS file system, you need to enable 'DBFS File Browser'
+	<Your Account Link> -> Settings -> Advanced -> Enable 'DBFS File Browser' option 
+		
+  4. Create a new Databricks Notebook 
+  
+	4.1 Click on 'New' -> 'Notebook' menu option
+	
+	4.2 Name the notebook as 'CTSDemoNotebook1'  (edit the title of the notebook)			
+		-> Observe that the Notebook is attached to the cluster you created
+		-> Observe that the language selected by default is 'Python'.
+		
+	4.3 Run the following commands in separate cells in the notebook to explore the files
+	
+		NOTE:
+		Shift+Enter to run
+		Shift+Ctrl+Enter to run selected text
+		
+		%fs ls		
+		%fs ls /FileStore/tables
+		%fs ls /FileStore/tables/retail_db/
+		display(dbutils.fs.ls("/FileStore/tables/retail_db"))
+		
+  5. Create a Spark application using Azure Databricks Notebook
+
+	-> You can use the existing notebook (created in step 4 above) or create a new notebook.		
+	-> Write the following code snippets into the cells.
+		
+-------------------------------------------------------------------		
+file_path = "/FileStore/tables/retail_db/orders"
+
+orders_df = spark.read.csv(
+	file_path,
+	schema="order_id INT, order_date STRING, order_cust_id INT, order_status STRING")
+
+orders_df.show(5)
+orders_df.count()
+display(orders_df)  # dispaly is a special command available in databricks notebooks. 
+			
+from pyspark.sql.functions import count
+
+orders_by_day_df = orders_df \
+                    .groupBy('order_date') \
+                    .agg( count('*').alias('daily_order_count'))
+
+display(orders_by_day_df)
+
+orders_by_day_df.write.csv("/FileStore/tables/retail_db/output/order_count", header=True)
+
+spark.read.csv('/FileStore/tables/retail_db/output/order_count', header=True).show()			
+--------------------------------------------------------------------	
+%fs ls /FileStore/tables/retail_db/output/order_count
+--------------------------------------------------------------------
+
+  6. Export and Import of Azure Databricks Notebooks
+  
+	6.1 Click on 'Workspace' -> 'CTSDemoNotebook1' -> Export -> DBC Archive
+	6.2 The notebook file will be downloaded to your machine.
+        You can export the notebook in other formats as well such as .pynb & .py files
+	6.3 Delete the current notebook
+		Click on 'Workspace' -> 'CTSDemoNotebook1' -> 'Move to Trash'
+		Confirm to delete
+	6.4 Import the notebook into your workspace.
+		Click on 'Workspace' -> '<your account> dropdown' -> Import
+		Browse and import the .dbc file
+	
+	
+  7. Delete the databricks cluster.
+  
+	7.1 Click on 'Compute' menu option
+	7.2 Select the cluster to go to cluster details page
+	7.3 Click on 'More...' -> 'Delete' option and confirm to delete the cluster
+	
+	NOTE: 	
+		Deleting a cluster terminates the cluster and removes its configuration.
+		Terminating a cluster retains the configuration. You can restart it later.
+		
+  8. Delete Azure Databricks Workspace by deleting Resource Group
+  
+	8.1 Login to Azure portal, search and open the 'Resource groups' home page
+	8.2 Click on the Resource group link (CTSDemoResouceGroup in my case)
+	8.3 Click on 'Delete resource group' button and delete it. 
+	
+	** This deletes the entire 'Resource group' including the workspace.
+
+

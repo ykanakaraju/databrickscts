@@ -1,0 +1,159 @@
+
+ Lab 3 - Getting started with Databricks on Azure
+ ------------------------------------------------ 
+ 
+  1. Create and launch 'Azure Databricks' workspace
+  
+	1.1 Login to Azure portal with your login credentials	
+	1.2 Search for and open 'Azure Databricks' service home page.	
+	1.3 Click on 'Create' button to open 'Create an Azure Databricks workspace' page.	
+	1.4 Fill the details as appropriate:
+	
+		Project Details
+			Resource group: 'Create new' -> Name: CTSDemoResouceGroup		
+		Instance Details
+			Workspace name: CTSDemoWorkspace
+			Region: East US
+			Pricing Tier: Standard (Apache Spark, Secure with Azure AD)		
+		Networking
+			Deploy Azure Databricks workspace with Secure Cluster Connectivity (No Public IP): No 
+			Deploy Azure Databricks workspace in your own Virtual Network (VNet): No			
+		Click on 'Review + create' 		
+		Click on 'Create' 	
+		
+	1.5 Wait until the page shows that your 'Deployment is complete'
+	1.6 Click on 'Go to resource' to go to your Databricks workspace page
+	1.7 Click on 'Launch workspace' button to launch 'Azure Databricks' workspace	
+	
+	NOTE: In the above step, we are signing-in using 'Azure Active Directory SSO' account.
+	
+	
+  2. Create a single node 'All-purpose compute' cluster	
+	
+	2.1 Click on 'New' -> 'Cluster' menu option
+		
+		Name: CTSDemoCluster   (you can edit this in the heading)
+		Select 'Single Node' option
+		Node type: Standard_F4
+		Terminate after: 30 minutes
+	
+	2.2 Click on 'Create compute' button.
+	2.3 Wait until cluster status becomes active.
+	
+	
+  3. Upload data files
+  
+	3.1 Click on 'New' -> 'Add data'
+	3.2 Click on 'DBFS' button (last one)
+	3.3 Drag and drop the files you want to upload
+	    -> Drop "retail_db" folder with data files provided to you.
+		
+	NOTE: To browse DBFS file system, you need to enable 'DBFS File Browser'
+	<Your Account Link> -> Admin Settings -> Workspace settings -> Advanced -> DBFS File Browser
+	
+		
+  4. Create a new notebook and run it using all-purpose cluster.
+  
+	4.1 Click on 'New' -> 'Notebook' menu option	
+	4.2 Name the notebook as 'Daily Order Count'  (edit the title of the notebook)			
+		-> Observe that the Notebook is attached to the cluster you created
+		-> Observe that the language selected by default is 'Python'.
+		
+	4.3 Run the following commands in separate cells in the notebook to explore the files
+	
+	
+		%fs rm -r /FileStore/tables/retail_csv/output
+		
+		file_path = "/FileStore/tables/retail_csv/orders"
+		
+		orders_df = spark.read.csv(
+						file_path,
+						schema="ord_id INT, ord_date STRING, ord_cust_id INT, ord_status STRING")	
+	
+		from pyspark.sql.functions import count
+
+		orders_by_day_df = orders_df.groupBy('ord_date') \
+							.agg( count('*').alias('daily_order_count'))
+	
+		orders_by_day_df.write.csv(
+			"/FileStore/tables/retail_csv/output/daily_order_count", 
+			header=True, 
+			mode="overwrite")	
+	
+	
+  5. Create a new Job and run it using all-purpose cluster.
+	
+	5.1 Click on 'New' -> 'Job' menu option	
+	5.2 Enter the following details		
+		Task name: Daily_Order_Count_Job
+		Type: Notebook
+		Source: Workspace
+		Path: Browse and select the notebook (ex: /Users/<account>/'Daily Order Count')
+		Cluster: Select the cluster you created above  (ex: CTSDemoCluster)		
+		Save the job
+		
+	5.3 Click on 'Run now' button to run the job.	
+	5.4 Click on 'job runs' tab (under Workflows) to monitor the status of the job run. 	
+	5.5 Wait until the job is completed. The status should show 'Succeeded' 
+	
+	Note: Observe the amount of time it has taken to complete the job
+	(for me it took almost 6 minutes, and of that about 5 minutes to spin up the cluster)
+		
+
+  6. Now, terminate the all-purpose cluster you created earlier (in step 2)
+  
+
+  7. Run the job using 'job cluster'
+  
+	7.1 Click on 'Workflows' menu option and select the job.	
+	7.2 Under 'Compute' section select 'Swap' and select 'Add new job cluster' option	
+	7.3 Select appropriate cluster options (Single node, Node type etc.) and 'Confirm'	
+	7.4 Click on 'Update' to update your job to use the job cluster.	
+	7.5 Click on 'Run now' to run the job.	
+	7.6 Go to 'Job runs' tab to monitor the status of the job run. 
+	
+
+  8. Create an instance pool
+  
+	8.1 Click on 'pools' tab under 'Compute' menu option	
+	8.2 Enter the following details:	
+		Name: CTS demo pool
+		Min Idle: 1
+		Max Capacity: 2
+		Idle Instance Auto Termination: 15 minutes
+		Instance Type: Standard_F4
+		Preloaded Databricks Runtime Version: 12.2 LTS
+	8.3 Click on 'Create' to create the pool
+		
+		
+  9. Create a new single node 'All-purpose compute' cluster in the pool
+  
+	9.1 Create a new single node cluster		
+	9.2 Select 'CTS demo pool' created in the previous step as 'Node type'
+	
+
+  10. Run the job using 'All-purpose compute' using the cluster in the pool
+  
+	10.1 Click on 'Workflows' menu option and select the job.	
+	10.2 Under 'Compute' section, select 'Swap' and select the cluster created in the above step.	
+	10.3 Cick on 'Update' to update your job to use the job cluster.	
+	10.4 Click on 'Run now' to run the job.	
+	10.5 Go to 'Job runs' tab to monitor the status of the job run. 
+	The job should now run much faster, as there is no cluster provisioning step here.
+		 
+		 
+  11. Cleanup/terminate your resources
+  
+	11.1 Delete the instance pool. 	
+	11.2 Delete the all purpose cluster	
+	11.3 Delete the jobs.
+  
+		
+	
+	
+	
+	
+	
+		
+  
+
