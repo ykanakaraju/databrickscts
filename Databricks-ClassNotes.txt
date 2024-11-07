@@ -508,7 +508,6 @@
                   expr("count > 200 as highFrequecy"),
                   expr("ORIGIN_COUNTRY_NAME = DEST_COUNTRY_NAME as domestic"))
 
-
   2. where / filter
 
 	df3 = df2.where("domestic = false and count > 1000")
@@ -522,7 +521,6 @@
 	df3 = df2.orderBy("count", "origin")
 	df3 = df2.orderBy(desc("count"), asc("origin"))
 	df3 = df2.sort(desc("count"), asc("origin"))
-
   
 
   4. groupBy  => returns a pyspark.sql.group.GroupedData object. Use an aggregation function to return a DataFrame.
@@ -811,6 +809,55 @@
 		joinCol = employee.deptid == department.id
 		joinedDf = employee.join(department, joinCol, "left_anti")
 		joinedDf.show()
+
+
+
+  DeltaLake PySpark Commands
+  ---------------------------
+
+  1. Saving the DF in delta format
+
+	df.write.format("delta").save(<targetPath>)
+
+
+  2. Creating a DF from delta files
+
+	df = spark.read.format("delta").load(<sourcePath>)
+
+
+  3. Creating a DeltaTable from delta files
+
+	from delta.tables import DeltaTable
+	deltaTable = DeltaTable.forPath(spark, <deltaPath>)
+
+
+  4. Creating a DataFrame from DeltaTable
+
+	df = deltaTable.toDF()
+
+
+  5. Creating a SQL table in Delta format
+
+	CREATE TABLE db1.students(id INT, name STRING, ...)
+	USING DELTA
+	LOCATION '/FileStore/delta/students'
+
+
+  6. Inserting data into a delta SQL table from a DataFrame
+
+	df.write.insertInto("db1.students")
+
+
+  7. Creating a DeltaTable from Delta SQL table
+
+	from delta.tables import DeltaTable
+	deltaTable = DeltaTable.forName(spark, "db1.students")
+
+
+
+
+
+
 
 
 
