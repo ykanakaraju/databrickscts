@@ -153,7 +153,6 @@
 	Graph parallel computations  		-> Spark GraphX
 
 
-
    Spark Architecture
    ------------------
 
@@ -177,7 +176,6 @@
 		-> Receives the tasks from the Driver
 		-> All tasks run the same code but on different partitions of the data
 		-> The status of tasks are reported to the driver. 	
-
 
 
    RDD (Resilient Distributed Dataset)
@@ -301,10 +299,280 @@
 			)
 
 
-  Basic steps in creating a Spark SQL Application
-  -----------------------------------------------
+   Basic steps in creating a Spark SQL Application
+   -----------------------------------------------
 
-	to be continued...
+	1. Read/load data from some data-source into a DataFrame 		
+
+		#df1 = spark.read.format("json").load(inputData)
+		#df1 = spark.read.load(inputData, format="json")
+		df1 = spark.read.json(inputData)
+
+
+	2. Transform the DF using DF transformation methods or using SQL
+
+	        Using DF transformation methods
+		-------------------------------	
+		 df2 = df1.select("userid", "name", "age", "gender", "phone") \
+        		.where("age is not null") \
+        		.orderBy("gender", "age") \
+        		.groupBy("age").count() \
+        		.limit(4)
+
+
+		Using SQL
+		---------		
+		df1.createOrReplaceTempView("users")
+		spark.catalog.listTables()
+
+		qry = """select age, count(*) as count
+			from users
+			where age is not null
+			group by age
+			order by age
+			limit 4"""
+					
+		df3 = spark.sql(qry)
+		df3.show()
+
+		NOTE: You can drop temp-view:  
+		      -> spark.catalog.dropTempView("users")
+
+
+	3. Save the dataframe into some external destination (such as files/databases/hive etc)
+
+		df2.write.format("json").save("/FileStore/output/json")
+		df2.write.save("/FileStore/output/json", format="json")
+		df2.write.json("/FileStore/output/json")
+
+
+  Save Modes
+  ----------
+    -> Control the behaviour when saving a DF into an existing directory.
+
+	1. errorIfExists (default)
+	2. ignore
+	3. append
+	4. overwrite
+
+	df3.write.mode("overwrite").json(outputPath)
+	df3.write.json(outputPath, mode="overwrite")
+
+
+  LocalTempView & GlobalTempView
+  -------------------------------
+	
+	LocalTempView 
+	   -> Local to a specific SparkSession
+	   -> Created using createOrReplaceTempView command
+
+		df1.createOrReplaceTempView("users")
+
+	GlobalTempView
+	   -> Can be accessed from multiple SparkSessions within the application
+	   -> Tied to "global_temp" database
+	   -> Created using createOrReplaceGlobalTempView command
+
+		df1.createOrReplaceGlobalTempView ("gusers")
+
+
+	select age, count(1) as count
+	from global_temp.gusers
+	where age is not null
+	group by age
+	order by age
+	limit 4
+
+
+
+  Working with different file formats
+  -----------------------------------
+
+  JSON
+	read
+		df1 = spark.read.format("json").load(inputPath)
+		df1 = spark.read.load(inputPath, format="json")
+		df1 = spark.read.json(inputPath)
+		df1 = spark.read.json(inputPath, multiLine=True)
+
+	write
+		df3.write.format("json").save(outputPath)
+		df3.write.save(outputPath, format="json")
+		df3.write.json(outputPath)	
+
+  Parquet (default)
+	read
+		df1 = spark.read.format("parquet").load(inputPath)
+		df1 = spark.read.load(inputPath, format="parquet")
+		df1 = spark.read.parquet(inputPath)
+
+	write
+		df3.write.format("parquet").save(outputPath)
+		df3.write.save(outputPath, format="parquet")
+		df3.write.parquet(outputPath)
+
+
+  ORC
+	read
+		df1 = spark.read.format("orc").load(inputPath)
+		df1 = spark.read.load(inputPath, format="orc")
+		df1 = spark.read.orc(inputPath)
+
+	write
+		df3.write.format("orc").save(outputPath)
+		df3.write.save(outputPath, format="orc")
+		df3.write.orc(outputPath)	
+
+
+  CSV (delimited text)
+
+	read
+		df1 = spark.read.format("csv").option("header", True).option("inferSchema", True).load(inputPath)
+		df1 = spark.read.format("csv").load(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True, sep="|")
+
+		my_schema = StructType(
+    			[
+        			StructField('ORIGIN_COUNTRY_NAME', StringType(), True), 
+        			StructField('DEST_COUNTRY_NAME', StringType(), True), 
+        			StructField('count', IntegerType(), True)
+    			]
+		)
+
+		# use Apache Hive types
+		my_schema = "ORIGIN_COUNTRY_NAME STRING, DEST_COUNTRY_NAME STRING, count INT"
+
+		// using programmatic schema
+		df1 = spark.read.schema(my_schema).csv(inputPath, header=True)
+
+	write
+		df3.write.format("csv").save(outputPath, header=True)
+		df2.write.csv(outputPath, header=True)
+		df2.write.csv(outputPath, header=True, sep="|", mode="overwrite")
+
+
+  Text
+	read
+		df1 = spark.read.text(inputPath)
+
+	write
+		df1.write.text(outputPath)
+
+
+ 
+
+  Creating an RDD from DataFrame
+  ------------------------------
+	rdd1 = df1.rdd
+
+
+  Creating a DataFrame from an RDD
+  --------------------------------
+	listUsers = [(1, "Raju", 5),
+		(2, "Ramesh", 15),
+		(3, "Rajesh", 18),
+		(4, "Raghu", 35),
+		(5, "Ramya", 25),
+		(6, "Radhika", 35),
+		(7, "Ravi", 70)]
+
+	rdd1 = spark.sparkContext.parallelize(listUsers)
+
+	df1 = rdd1.toDF(["id", "name", "age"])
+
+	df1.show()
+	df1.printSchema()
+
+
+  Creating a DataFrame from programmatic data
+  --------------------------------------------
+	listUsers = [(1, "Raju", 5),
+		(2, "Ramesh", 15),
+		(3, "Rajesh", 18),
+		(4, "Raghu", 35),
+		(5, "Ramya", 25),
+		(6, "Radhika", 35),
+		(7, "Ravi", 70)]
+
+	df1 = spark.createDataFrame(listUsers, ["id", "name", "age"])
+	df1 = spark.createDataFrame(listUsers).toDF("id", "name", "age")
+
+
+  DataFrame Transformations
+  -------------------------
+
+  1. select
+
+	df2 = df1.select("ORIGIN_COUNTRY_NAME", "DEST_COUNTRY_NAME", "count")
+
+
+	df2 = df1.select( 
+		  col("ORIGIN_COUNTRY_NAME").alias("origin"),
+                  col("DEST_COUNTRY_NAME").alias("destination"),
+                  expr("count").cast("int"),
+                  expr("count + 10 as newCount"),
+                  expr("count > 200 as highFrequecy"),
+                  expr("ORIGIN_COUNTRY_NAME = DEST_COUNTRY_NAME as domestic"))
+
+  2. where / filter
+
+	df3 = df2.where("domestic = false and count > 1000")
+	df3 = df2.filter("domestic = false and count > 1000")
+
+	df3 = df2.filter( col("count") > 1000 )
+
+
+  3. orderBy / sort
+
+	df3 = df2.orderBy("count", "origin")
+	df3 = df2.orderBy(desc("count"), asc("origin"))
+	df3 = df2.sort(desc("count"), asc("origin"))
+  
+
+  4. groupBy  => returns a pyspark.sql.group.GroupedData object. Use an aggregation function to return a DataFrame.
+	
+	df3 = df2.groupBy("highFrequecy", "domestic").count()
+	df3 = df2.groupBy("highFrequecy", "domestic").sum("count")
+	df3 = df2.groupBy("highFrequecy", "domestic").max("count")
+	df3 = df2.groupBy("highFrequecy", "domestic").avg("count")
+
+	df3 = df2.groupBy("highFrequecy", "domestic") \
+        	.agg( count("count").alias("count"),
+              		sum("count").alias("sum"),
+              		max("count").alias("max"),
+              		round(avg("count"), 2).alias("avg")
+            	  )
+
+   5. limit	
+
+	df2 = df1.limit(10)
+
+
+   6. selectExpr
+
+	df2 = df1.selectExpr("DEST_COUNTRY_NAME as destination", 
+                     "ORIGIN_COUNTRY_NAME as origin",
+                     "count",
+                     "count + 10 as newCount",
+                     "count > 200 as highFrequency",
+                     "DEST_COUNTRY_NAME = ORIGIN_COUNTRY_NAME as domestic")
+
+	df2.show()
+	df2.printSchema()
+  
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
