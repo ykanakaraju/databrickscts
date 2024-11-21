@@ -1,0 +1,180 @@
+
+  Databricks (40 hours)
+  -------------------------------
+   Databricks Basics
+   PySpark Essentials
+	- Spark basics
+	- Spark SQL basics
+	- Structured streaming basics
+   Databricks Lakehouse Platform 
+	– Delta Lake Basics
+	- Delta Lake Features
+   ELT with Spark SQL
+   Incremental Data Processing 
+	- Structured Streaming
+	- AutoLoader
+   Delta Live Tables - Production pipelines	
+   Data Governance (basics)
+
+
+  Materials
+  ---------
+  - PDF presentations
+  - Code Modules (PySpark)
+  - Databricks Notebooks (DBC files)
+  - Class notes
+  - Github: https://github.com/ykanakaraju/databrickscts
+
+ 
+  Getting started with Spark on Databricks
+  ----------------------------------------   
+   ** Databricks Community Edition (free edition)
+ 		
+	Signup: https://www.databricks.com/try-databricks
+		Screen 1: Fill up the details with valid email address
+		Screen 2: Click on "Get started with Community Edition" link (Not the 'Continue' button)
+
+	Login: https://community.cloud.databricks.com/login.html
+
+	Downloading a file from Databricks
+	----------------------------------
+		/FileStore/<FILEPATH>
+		https://community.cloud.databricks.com/files/<FILEPATH>?o=1072576993312365
+
+		Example:
+		dbfs:/FileStore/output/wc/part-00000
+		https://community.cloud.databricks.com/files/output/wc/part-00000?o=1072576993312365
+
+		dbfs:/FileStore/output/wordcount1/part-00000
+		https://community.cloud.databricks.com/files/output/wordcount1/part-00000?o=1072576993312365
+
+
+ 	Enabling DBFS File browser
+	--------------------------
+	<your account (top-right)> -> Settings -> Advanced -> Other -> DBFS File Browser (enable it)
+
+
+  
+  Databricks Basics
+  -----------------
+	
+	1. Compute - Spin up cluster resources		
+		1. All purpose clusters - continuously running, persistent cluster
+		2. Job clusters - spinned up to execute a job and then terminated	
+
+	2. Catalog
+		-> All data is stored in Catalog
+		-> All local files are store in /FileStore directory
+		-> Default hive warehouse directory : /user/hive/warehouse
+
+	3. Workspace
+		-> All the notebooks are managed in the workspace
+
+
+	
+
+  Databricks 'dbutils'
+  --------------------
+
+	'help' command
+	------------
+	dbutils.help()
+	dbutils.fs.help()
+	dbutils.fs.help('ls')
+
+
+	'ls' command
+	------------
+	dbutils.fs.ls("/")
+	dbutils.fs.ls("/FileStore")
+		list paths => [ d[0] for d in dbutils.fs.ls("/FileStore")]
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mkdirs' command
+	----------------
+	dbutils.fs.mkdirs("/FileStore/testdata2")
+	dbutils.fs.ls("/FileStore")
+
+
+	'cp' command to copy files between DBFS directories
+	---------------------------------------------------
+	dbutils.fs.cp("/FileStore/testdata/csv/2011_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2012_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2013_summary.csv", "/FileStore/testdata2")
+
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mv' command for moving or renaming files
+	------------------------------------------
+	dbutils.fs.help('mv')
+
+	dbutils.fs.mv("/FileStore/testdata/csv", "/FileStore/testdata3", recurse=True)
+	dbutils.fs.ls('/FileStore/testdata3')
+
+	dbutils.fs.mv('/FileStore/testdata3/2011_summary.csv', '/FileStore/testdata3/2011_summary_renamed.csv')
+
+
+	'rm' command to remove files & directories from DBFS
+	-----------------------------------------------------
+	dbutils.fs.rm('/FileStore/testdata3/2011_summary_renamed.csv')
+	dbutils.fs.rm('/FileStore/testdata3/', recurse=True)
+
+
+
+  Spark
+  -----
+	Spark is an open-source in-memory distributed computing framework.
+
+	-> Spark is written in Scala
+
+	-> Spark is a ployglot  
+		-> Spark applications can be written in multiple languages
+		-> Supports Python, R, Scala, Java, SQL
+
+	-> Spark can run on multiple cluster managers
+		-> Supports local, spark standalone, YARN, Mesos, Kubernetes
+
+
+    Spark is a unified framework.
+    -----------------------------
+	
+	Spark provides a consistent set of APIs for performing different analytics workloads
+        using the same execution engine and some well defined data abstractions and operations.
+
+   	Batch Analytics of unstructured data	-> Spark Core API (low-level api)
+	Batch Analytics of structured data 	-> Spark SQL
+	Streaming Analytics (real time)		-> Spark Streaming (DStreams API), Structured Streaming
+	Predictive analytics (ML)		-> Spark MLLib  (mllib & ml)
+	Graph parallel computations  		-> Spark GraphX
+
+
+
+   Spark Architecture
+   ------------------
+
+	.. to be discussed..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
