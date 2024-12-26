@@ -834,7 +834,6 @@
 		joinedDf.show()
 
 
-
  ===========================================
    Spark Streaming (Structured Streaming) 
  ===========================================
@@ -893,9 +892,6 @@
 	ForEachBatch sink
 	ForEach sink 
 	Memory sink
-
-
-
 
 
 
