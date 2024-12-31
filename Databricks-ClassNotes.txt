@@ -895,7 +895,48 @@
 
 
 
+  DeltaLake PySpark Commands
+  ---------------------------
 
+  1. Saving the DF in delta format
+
+	df.write.format("delta").save(<targetPath>)
+
+
+  2. Creating a DF from delta files
+
+	df = spark.read.format("delta").load(<sourcePath>)
+	df = spark.read.format("delta").option("timestampAsOf", "2024-11-02 00:00:00").load(<sourcePath>)
+	df = spark.read.format("delta").option("versionAsOf", 2).load(<sourcePath>)
+
+
+  3. Creating a DeltaTable from delta files
+
+	from delta.tables import DeltaTable
+	deltaTable = DeltaTable.forPath(spark, <deltaPath>)
+
+
+  4. Creating a DataFrame from DeltaTable
+
+	df = deltaTable.toDF()
+
+
+  5. Creating a SQL table in Delta format
+
+	CREATE TABLE db1.students(id INT, name STRING, ...)
+	USING DELTA
+	LOCATION '/FileStore/delta/students'
+
+
+  6. Inserting data into a delta SQL table from a DataFrame
+
+	df.write.insertInto("db1.students")
+
+
+  7. Creating a DeltaTable from Delta SQL table
+
+	from delta.tables import DeltaTable
+	deltaTable = DeltaTable.forName(spark, "db1.students")
 
 
 
