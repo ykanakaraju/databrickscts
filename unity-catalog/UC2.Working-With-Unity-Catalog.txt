@@ -1,0 +1,147 @@
+  
+  Working with Unity Catalog enabled Workspace
+  --------------------------------------------
+  
+  Prerequites: 
+  * Setup a UC metastore and assign it to a workspace as described in the previous lab.
+  
+  
+  
+ 1. Login to account console using your Global admin Microsoft Entra ID account
+			
+	Microsoft Entra ID: <your-admin-user-account>
+	Password: <password>
+			
+ 2. Go to 'Workspaces' menu and open the workspace to which unity-catalog metastore is assigned. 
+ 
+ 3. Create a new catalog
+ 
+	3.1 Click on 'Catalog' menu option.
+	3.2 Click on + icon and select 'Add a catalog'
+	3.3 Give a name (demo_catalog) and click on 'Create' button 
+	
+ 4. Create a schema in the catalog
+ 
+	4.1 Open the catalog and click on 'Create schema' button.
+	4.2 Give a name (demo_schema) and click on 'Create' button 
+	
+ 5. Create a table by uploading a data file.
+ 
+	5.1 Open the schema and click on "Create" -> Create table option
+	    You will be routed to 'Add data' using file upload page.
+		
+		It will by default, uses 'Serverless Starter Warehouse'.
+		You can also create a cluster and use that as well.
+		
+		NOTE: The table is created in the default storage location of the metastore. 
+		Yu can browse the container (in Azure storage account) to check the directory structure.
+		
+	
+  Accessing 'External Locations' in Unity Catalog	
+  -----------------------------------------------  
+  Steps:
+  
+	1. Create Access Connector (used as managed identity)
+	2, Create ADLS Gen2 storage account and a container as your external storage
+	3. Assign the 'Storage Blob Data Contributor' role on the ADLS data lake to the access connector.
+	4. Create the 'Storage credential' using the access connector
+	5. Create the external location (an external location -> Storage credential + ADLS container)
+	  
+ 
+ 6. Create Access Connector for Azure Databricks
+
+	6.1 Go to Azure portal. Search for and launch 'Access Connector for Azure Databricks'
+	
+	6.2 Click on '+ Create'
+	
+	6.3 Create Access Connector using the following details:
+		Subscription: Azure subscription - Basic
+		Resource group: databricks-uc-rg
+		Name: databricks-uc-ac-external
+		Region: East US
+		Click 'Review + create' -> Create
+		
+	6.4 Make a note of the Access Connector Id			
+		<Access Connector> -> Settings -> Properties -> Id
+		Copy this and store it some where. 	
+		
+ 7. Create Azure Datalake Gen2 storage account and a container in it.
+  
+	7.1 Search for and open 'Storage accounts' and click on '+ Create'
+	
+	7.2 Create a Storage account with the folowing details:	
+		Subscription: Azure subscription - Basic
+		Resource group: databricks-uc-rg
+		Storage account name: databricksucdlextykr   (you can give any available name here)
+		Region: East US
+		Primary service: Azure Blob Storage or Azure Data Lake Storage Gen2
+		Performance: Standard
+		Redundancy: Locally redundant storage (LRS)		
+		
+	7.3 Click Next		
+		Enable hierarchical namespace: Enable (tick the checkbox)		
+		Leave all other options as defaults
+	
+	7.4 Click 'Review + create' -> Create
+	
+	7.5 Open the storage account and create a new container.
+		name: demo
+		
+	7.6 Upload ""circuits.csv file into the container.
+	
+	
+ 8. Assign role 'Storage Blob Data Contributor' to your storage account
+  
+	8.1 Open the storage account created earlier (databricksucdlextykr)	
+	
+	8.2 Click on Access Control (IAM) menu option	
+	
+	8.3 Click on '+ Add' -> 'Add role assignment' menu option
+	
+	8.4 Search and select 'Storage Blob Data Contributor' and click 'Next'
+	
+	8.5 In the 'Members' section do the following:
+		Assign access to: Managed identity
+		Members: + Select members		
+		From the pop up window select the following:
+			Managed identity: Access Connector for Azure Databricks
+			Select the access connector you created earlier - databricks-uc-ac-external
+			Click on 'Select'
+			
+	8.6 Click on 'Review + assign' -> 'Review + assign'		
+ 
+	
+ 9. Create the 'Storage credential' in your Databricks workspace.	
+  
+	9.1 Go to Databricks workspace.
+	9.2 Click on 'Catalog' menu -> 'External data' button
+	9.3 Select 'Credentials' tab and click on 'Create credential' button.
+	9.4 Create the 'Storage credential' as follows:
+	
+		Credential Type: Azure Managed Identity
+		Storage credential name: databricks-uc-external-storage-cred
+		Access connector ID: <as copied from step 6.4>
+		
+		
+ 10. Create an external location
+
+	10.1 Click on 'Catalog' menu -> 'External data' button
+	10.2 Click on External Locations -> 'Create location' button
+	10.3 Create the 'External location' as follows:
+	
+		External location name: databricksucdlextykr_demo  (I am using <sa>_<container> pattern)
+		Storage credential: Select the one you created earlier
+		URL: abfss://demo@databricksucdlextykr.dfs.core.windows.net/
+		Click on 'Create'
+		
+	10.4 Select the external location and click on 'Test Connection'
+	
+
+  11. Run the following command in a notebook to test the external location
+  
+	    dbutils.fs.ls("abfss://demo@databricksucdlextykr.dfs.core.windows.net/")
+	
+	
+	
+		
+		

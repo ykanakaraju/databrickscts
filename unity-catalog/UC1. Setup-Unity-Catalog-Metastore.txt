@@ -1,0 +1,174 @@
+  
+  Setup Unity Catalog Metastore using Azure Databricks
+  ----------------------------------------------------
+  1. Create Databricks Workspace
+  2. Create Azure Datalake Gen2 Storage account
+  3. Create Access Connector
+  4. Add role Storage Blob Data Contributor
+  5. Create Unity Catalog Metastore
+  6. Enable Databricks Workspace for Unity Catalog
+  
+  
+  1. Create Databricks Workspace
+  
+	1.1 Login to Azure Portal, open 'Azure Databricks' service and click on '+ Create'
+	
+	1.2 Create the workspace with the following details:
+		Subscription: Azure subscription - Basic
+		Resource group: Create new -> databricks-uc-rg
+		Workspace name: databricks-uc-ws
+		Region: East US
+		Pricing Tier: Premium
+		Leave other values as defauls
+		
+		Click on 'Review + create' -> 'Create'
+		
+		
+  2. Create Azure Datalake Gen2 storage account.
+  
+	2.1 Search for and open 'Storage accounts' and click on '+ Create'
+	
+	2.2 Create a Storage account with the following details:	
+		Subscription: Azure subscription - Basic
+		Resource group: databricks-uc-rg
+		Storage account name: databricksucdlykr   (you can give any available name here)
+		Region: East US
+		Primary service: Azure Blob Storage or Azure Data Lake Storage Gen2
+		Performance: Standard
+		Redundancy: Locally redundant storage (LRS)		
+		
+	2.3 Click Next		
+		Enable hierarchical namespace: Enable (tick the checkbox)		
+		Leave all other options as defaults
+	
+	2.4 Click 'Review + create' -> Create
+	
+		
+  3. Create Access Connector for Azure Databricks
+
+	3.1 Search for and launch 'Access Connector for Azure Databricks'
+	
+	3.2 Click on '+ Create'
+	
+	3.3 Create Access Connector using the following details:
+		Subscription: Azure subscription - Basic
+		Resource group: databricks-uc-rg
+		Name: databricks-uc-ac
+		Region: East US
+		Click 'Review + create' -> Create
+		
+	3.4 Make a note of the Access Connector Id			
+		<Access Connector> -> Settings -> Properties -> Id
+		Copy this and store it some where. 
+		
+		
+  4. Assign role 'Storage Blob Data Contributor' to your storage account
+  
+	4.1 Open the storage account created in step 2 (databricksucdlykr)	
+	
+	4.2 Click on Access Control (IAM) menu option	
+	
+	4.3 Click on '+ Add' -> 'Add role assignment' menu option
+	
+	4.4 Search and select 'Storage Blob Data Contributor' and click 'Next'
+	
+	4.5 In the 'Members' section do the following:
+		Assign access to: Managed identity
+		Members: + Select members		
+		From the pop up window select the following:
+			Managed identity: Access Connector for Azure Databricks
+			Select the access connector you created earlier - databricks-uc-ac
+			Click on 'Select'
+			
+	4.6 Click on 'Review + assign' -> 'Review + assign'
+	
+	
+  5. Create a container in your storage account for UC metastore
+  
+	5.1 Open the storage account (databricksucdlykr)
+	
+	5.2 Click on Data storage (left-menu) -> Containers
+	
+	5.3 Click on '+ Container'
+	    Name: metastore
+		Click on 'Create' to create the container	
+		
+	
+  6. Create Unity Catalog Metastore
+		
+	6.1 Login to Databricks account console. (https://accounts.azuredatabricks.net/)
+		This is where you create the unity catalog metastore.
+		
+		Click on Workspace link (top-right) -> Manage account
+		Login using your Global admin Microsoft Entra ID account
+			Microsoft Entra ID: <your-admin-user-account>
+			Password: <password>
+			URL: https://accounts.azuredatabricks.net/
+	
+	6.2 Click on Catalog (left-menu) -> Create metastore (button)
+	
+		Name: databricks_uc_meta
+		Region: eastus
+		ADLS Gen 2 path: abfss://metastore@databricksucdlykr.dfs.core.windows.net/
+		(format: abfss://<container>@<storage-account>.dfs.core.windows.net/<path>
+		Access Connector Id: <you access connector id> from step 3.4
+		
+	6.3 Click 'Create' to create the metastore. 
+	
+  7. Assign the metstore to your (premium tier) workspace.
+  
+	7.1 Check the workspace (databricks-uc-ws) and click on 'Assign' button
+	7.2 Click on 'Enable' button (on the popup window)
+	
+	Alternate Path:
+	--------------
+	Click on 'Catalog' menu and click on your metastore link
+	Click on 'Workspaces' tab and click 'Assign to workspace' button.
+	Check the workspace and click on 'Assign' button
+	
+	
+  Some important points regading Cluster configartion
+  ---------------------------------------------------
+
+	1. Unity Catalog is supported only on cluster using Databricks Runtime 11.3 LTS or up.
+	2. Only Single user and Shared access modes are supported for multi-node clusters
+	3. Only Single user access mode are supported for multi-node clusters
+	4. Select a node type with minimum 4 cores.
+	
+	
+  Other important points to keep in mind
+  --------------------------------------
+  
+    1. In UC, managed tables can only be in delta format.
+	   Use external tables for non-delta formats (such as parquet, json)
+	   
+	2. In UC enabled workspaces, the data of deleted managed tables is retained for 30 days.
+	
+		
+	
+	
+  
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+  
+  
+  
