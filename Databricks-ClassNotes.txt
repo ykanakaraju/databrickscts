@@ -1,0 +1,176 @@
+	
+  Azure Databricks (48 hours)
+  ----------------------------
+   Databricks Basics
+	- Databricks Community basic features
+	- Notebook basics & Magic commands
+	- Databricks Utilities
+   PySpark Essentials
+	- Spark basics
+	- Spark SQL basics
+	- Spark Structured Streaming basic
+   Azure Databricks 
+    	- Azure Databricks Architecture
+    	- Workspaces & Storage Accounts
+    	- ADLS-Gen2 Access Patterns
+   	- Mount ADLS-Gen2 containers on Databricks
+   Databricks Lakehouse Platform 
+	– Delta Lake Basics
+	- Delta Lake Features
+   ELT with Spark SQL
+	- Querying from files
+	- Writing to tables
+	- HOFs & UDFs
+   Incremental Data Processing 
+	- Structured Streaming
+	- AutoLoader
+   Production pipelines	
+	- Delta Live Tables
+	- Job Workflow
+   Data Governance
+	- Unity Catalog
+
+
+  Materials
+  ---------
+   - PDF presentations
+   - Code Modules (PySpark)
+   - Databricks Notebooks (DBC files)
+   - Class notes (Pyspark)
+   - Github: https://github.com/ykanakaraju/databrickscts
+
+ 
+  Getting started with Spark on Databricks
+  ----------------------------------------   
+   ** Databricks Community Edition (free edition)
+ 		
+	Signup: https://www.databricks.com/try-databricks
+		Screen 1: Fill up the details with valid email address
+		Screen 2: Click on "Get started with Community Edition" link (Not the 'Continue' button)
+
+	Login: https://community.cloud.databricks.com/login.html
+
+
+ 	Enabling DBFS File browser
+	--------------------------
+	<your account (top-right)> -> Settings -> Advanced -> Other -> DBFS File Browser (enable it)
+								    -> & refresh the browser page  
+
+
+  Databricks Basics
+  -----------------
+	
+	1. Compute - Spin up cluster resources		
+		1. All purpose clusters - continuously running, persistent cluster
+		2. Job clusters - spinned up to execute a job and then terminated	
+
+	2. Catalog
+		-> All data is stored in Catalog
+		-> All local files are store in /FileStore directory
+		-> Default hive warehouse directory : /user/hive/warehouse
+
+	3. Workspace
+		-> All the notebooks are managed in the workspace
+
+
+
+ Databricks 'dbutils'
+  --------------------
+
+	'help' command
+	------------
+	dbutils.help()
+	dbutils.fs.help()
+	dbutils.fs.help('ls')
+
+
+	'ls' command
+	------------
+	dbutils.fs.ls("/")
+	dbutils.fs.ls("/FileStore")
+		list paths => [ d[0] for d in dbutils.fs.ls("/FileStore")]
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mkdirs' command
+	----------------
+	dbutils.fs.mkdirs("/FileStore/testdata2")
+	dbutils.fs.ls("/FileStore")
+
+
+	'cp' command to copy files between DBFS directories
+	---------------------------------------------------
+	dbutils.fs.cp("/FileStore/testdata/csv/2011_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2012_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2013_summary.csv", "/FileStore/testdata2")
+
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mv' command for moving or renaming files
+	------------------------------------------
+	dbutils.fs.help('mv')
+
+	dbutils.fs.mv("/FileStore/testdata/csv", "/FileStore/testdata3", recurse=True)
+	dbutils.fs.ls('/FileStore/testdata3')
+
+	dbutils.fs.mv('/FileStore/testdata3/2011_summary.csv', '/FileStore/testdata3/2011_summary_renamed.csv')
+
+
+	'rm' command to remove files & directories from DBFS
+	-----------------------------------------------------
+	dbutils.fs.rm('/FileStore/testdata3/2011_summary_renamed.csv')
+	dbutils.fs.rm('/FileStore/testdata3/', recurse=True)
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
