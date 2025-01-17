@@ -878,6 +878,64 @@
 
 
 
+  Delta Lake using Python
+  ------------------------
+
+   1. Save a DataFrame in delta format files
+
+	df.write.format("delta").save(<path>)
+
+
+   2. Creating a DataFrame from Delta files
+
+	df = spark.read.format("delta").load(<path>)  
+
+
+   3. Create a DeltaTable from Delta files 
+
+	from delta.tables import DeltaTable
+	dt = DeltaTable.forPath(spark, <path>)
+
+
+   4. Create a DataFrame from a DeltaTable
+
+	df = dt.toDF()
+
+
+   5. Creating a SQL table on top of delta format files
+
+
+	CREATE TABLE db1.students(........)
+	USING DELTA
+	LOCATION '<path>'
+
+   6. Writing a DataFrame into a SQL delta table
+
+	df.write.insertInto("db1.students")
+
+
+   7. Create a DeltaTable from SQL delta table
+
+	from delta.tables import DeltaTable
+	dt = DeltaTable.forName(spark, "db1.students")
+
+
+   
+
+
+ 
+
+
+
+
+
+
+					 		   
+
+
+
+
+
 
 
 
