@@ -1,0 +1,109 @@
+	
+  Databricks (40 hours)
+  ----------------------------
+   Databricks Basics
+	- Databricks Community basic features
+	- Notebook basics & Magic commands
+	- Databricks Utilities
+   PySpark Essentials
+	- Spark SQL basics
+	- Structured Streaming basics
+   Databricks Lakehouse Platform 
+	– Delta Lake using SQL & Python
+	- Delta Lake Features
+   ELT with Spark SQL
+	- Querying from files
+	- Writing to tables
+	- HOFs & UDFs
+   Incremental Data Processing 
+	- COPY INTO command
+	- Structured Streaming
+	- AutoLoader
+	- Medallion Pattern
+   Production pipelines	
+	- Delta Live Tables
+	- Job Workflow
+   Data Governance basics
+	- Unity Catalog
+
+
+  Materials
+  ---------
+   - PDF presentations
+   - Code Modules (PySpark)
+   - Databricks Notebooks (DBC files)
+   - Class notes (Pyspark)
+   - Github: https://github.com/ykanakaraju/databrickscts
+
+
+  Getting started with Spark on Databricks
+  ----------------------------------------   
+   ** Databricks Community Edition (free edition)
+ 		
+	Signup: https://www.databricks.com/try-databricks
+		Screen 1: Fill up the details with valid email address
+		Screen 2: Click on "Get started with Community Edition" link (Not the 'Continue' button)
+
+	Login: https://community.cloud.databricks.com/login.html
+
+
+ 	Enabling DBFS File browser
+	--------------------------
+	<your account (top-right)> -> Settings -> Advanced -> Other -> DBFS File Browser (enable it)
+								    -> & refresh the browser page  
+    
+
+  Databricks Basics
+  -----------------
+	
+	1. Compute - Spin up cluster resources		
+		1. All purpose clusters - continuously running, persistent cluster
+		2. Job clusters - spinned up to execute a job and then terminated	
+
+	2. Catalog
+		-> All data is stored in Catalog
+		-> All local files are store in /FileStore directory
+		-> Default hive warehouse directory : /user/hive/warehouse
+
+	3. Workspace
+		-> All the notebooks are managed in the workspace
+	
+ 	
+
+
+  
+
+
+
+
+
+	
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
