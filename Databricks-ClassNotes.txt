@@ -69,6 +69,54 @@
 		-> All the notebooks are managed in the workspace
 	
  	
+ Databricks 'dbutils'
+  --------------------
+
+	'help' command
+	------------
+	dbutils.help()
+	dbutils.fs.help()
+	dbutils.fs.help('ls')
+
+
+	'ls' command
+	------------
+	dbutils.fs.ls("/")
+	dbutils.fs.ls("/FileStore")
+		list paths => [ d[0] for d in dbutils.fs.ls("/FileStore")]
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mkdirs' command
+	----------------
+	dbutils.fs.mkdirs("/FileStore/testdata2")
+	dbutils.fs.ls("/FileStore")
+
+
+	'cp' command to copy files between DBFS directories
+	---------------------------------------------------
+	dbutils.fs.cp("/FileStore/testdata/csv/2011_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2012_summary.csv", "/FileStore/testdata2")
+	dbutils.fs.cp("/FileStore/testdata/csv/2013_summary.csv", "/FileStore/testdata2")
+
+	dbutils.fs.ls("/FileStore/testdata/csv")
+
+
+	'mv' command for moving or renaming files
+	------------------------------------------
+	dbutils.fs.help('mv')
+
+	dbutils.fs.mv("/FileStore/testdata/csv", "/FileStore/testdata3", recurse=True)
+	dbutils.fs.ls('/FileStore/testdata3')
+
+	dbutils.fs.mv('/FileStore/testdata3/2011_summary.csv', '/FileStore/testdata3/2011_summary_renamed.csv')
+
+
+	'rm' command to remove files & directories from DBFS
+	-----------------------------------------------------
+	dbutils.fs.rm('/FileStore/testdata3/2011_summary_renamed.csv')
+	dbutils.fs.rm('/FileStore/testdata3/', recurse=True)
+  
 
 
   
