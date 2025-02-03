@@ -52,7 +52,6 @@
 	<your account (top-right)> -> Settings -> Advanced -> Other -> DBFS File Browser (enable it)
 								    -> & refresh the browser page  
     
-
   Databricks Basics
   -----------------
 	
@@ -69,7 +68,7 @@
 		-> All the notebooks are managed in the workspace
 	
  	
- Databricks 'dbutils'
+  Databricks 'dbutils'
   --------------------
 
 	'help' command
@@ -120,6 +119,240 @@
 
 
   
+  Spark
+  -----
+	Spark is an open-source in-memory distributed computing framework for big data analytics.
+
+	-> Spark is written in Scala
+
+	-> Spark is a ployglot  
+		-> Spark applications can be written in multiple languages
+		-> Supports Python, R, Scala, Java, SQL
+
+	-> Spark can run on multiple cluster managers
+		-> Supports local, spark standalone, YARN, Mesos, Kubernetes
+
+
+    Spark is a unified framework.
+    -----------------------------	
+	Spark provides a consistent set of APIs for performing different analytics workloads
+        using the same execution engine and some well defined data abstractions and operations.
+
+   	Batch Analytics of unstructured data	-> Spark Core API (low-level api)
+	Batch Analytics of structured data 	-> Spark SQL
+	Streaming Analytics (real time)		-> Spark Streaming (DStreams API), Structured Streaming
+	Predictive analytics (ML)		-> Spark MLLib  (mllib & ml)
+	Graph parallel computations  		-> Spark GraphX
+
+
+   Spark Architecture
+   ------------------
+
+	1. Cluster Manager (CM)
+		-> Applications are submitted to CMs
+		-> Allocates containers for lauching driver and executors on the cluster. 
+		-> Spark supports multiple CMs
+			-> local, standalone, YARN, Mesos, Kubernetes		
+
+	2. Driver
+		-> Master process
+		-> Runs the 'SparkContext' object
+		-> Manages the user code and sends the tasks to the executors as per the code. 
+		
+	3. SparkContext
+		-> Is an application context
+		-> Starting point of execution
+		-> Is the link between the driver and tasks running on the executors
+
+	4. Executors
+		-> Receives the tasks from the Driver
+		-> All tasks run the same code but on different partitions of the data
+		-> The status of tasks are reported to the driver. 	
+
+ 
+  ================================
+     Spark SQL (pyspark.sql)
+  ================================ 
+	
+     -> High Level API built on top of Spark Core
+
+	File Formats : Parquet, ORC, JSON, CSV (delimited text), Text (& AVRO)
+	JDBC Format  : RDBMS, NoSQL
+	Hive Format  : Hive Warehouse
+
+
+   SparkSession
+   ------------
+	-> Starting point of execution
+	-> Represents a user session (SparkSession) running inside an application (SparkContext)
+	-> Each SparkSession can have its own configuration
+
+	spark = SparkSession \
+    		.builder \
+    		.appName("Basic Dataframe Operations") \
+    		.config("spark.master", "local") \
+    		.getOrCreate() 
+
+
+   DataFrame
+   ---------
+        -> Main data abstraction of Spark SQL
+	-> Is a collection of distributed in-memory partitions
+	-> Immutable
+	-> Lazily evaluated
+
+	-> DataFrame partitions contain only "Row" objects. (pyspark.sql.Row)
+
+	-> DataFrame contains two components:
+		-> Data    : Collection of 'Row' objects
+		-> Schema  : StructType object
+
+			StructType(
+			   [
+				StructField('age', LongType(), True), 
+				StructField('gender', StringType(), True), 
+				StructField('name', StringType(), True), 
+				StructField('phone', StringType(), True), 
+				StructField('userid', LongType(), True)
+			   ]
+			)
+
+
+  Basic steps in creating a Spark SQL Application
+  -----------------------------------------------
+
+	1. Read/load data from some data-source into a DataFrame 		
+
+		#df1 = spark.read.format("json").load(inputData)
+		#df1 = spark.read.load(inputData, format="json")
+		df1 = spark.read.json(inputData)
+
+
+	2. Transform the DF using DF transformation methods or using SQL
+
+	        Using DF transformation methods
+		-------------------------------	
+		 df2 = df1.select("userid", "name", "age", "gender", "phone") \
+        		.where("age is not null") \
+        		.orderBy("gender", "age") \
+        		.groupBy("age").count() \
+        		.limit(4)
+
+
+		Using SQL
+		---------		
+		df1.createOrReplaceTempView("users")
+		spark.catalog.listTables()
+
+		qry = """select age, count(*) as count
+			from users
+			where age is not null
+			group by age
+			order by age
+			limit 4"""
+					
+		df3 = spark.sql(qry)
+		df3.show()
+
+		NOTE: You can drop temp-view:  
+		      -> spark.catalog.dropTempView("users")
+
+
+	3. Save the dataframe into some external destination (such as files/databases/hive etc)
+
+		df2.write.format("json").save("/FileStore/output/json")
+		df2.write.save("/FileStore/output/json", format="json")
+		df2.write.json("/FileStore/output/json")
+
+  Save Modes
+  ----------
+    -> Control the behaviour when saving a DF into an existing directory.
+
+	1. errorIfExists (default)
+	2. ignore
+	3. append
+	4. overwrite
+
+	df3.write.mode("overwrite").json(outputPath)
+	df3.write.json(outputPath, mode="overwrite")
+
+
+  Working with different file formats
+  -----------------------------------
+
+  JSON
+	read
+		df1 = spark.read.format("json").load(inputPath)
+		df1 = spark.read.load(inputPath, format="json")
+		df1 = spark.read.json(inputPath)
+		df1 = spark.read.json(inputPath, multiLine=True)
+
+	write
+		df3.write.format("json").save(outputPath)
+		df3.write.save(outputPath, format="json")
+		df3.write.json(outputPath)	
+
+  Parquet (default)
+	read
+		df1 = spark.read.format("parquet").load(inputPath)
+		df1 = spark.read.load(inputPath, format="parquet")
+		df1 = spark.read.parquet(inputPath)
+
+	write
+		df3.write.format("parquet").save(outputPath)
+		df3.write.save(outputPath, format="parquet")
+		df3.write.parquet(outputPath)
+
+
+  ORC
+	read
+		df1 = spark.read.format("orc").load(inputPath)
+		df1 = spark.read.load(inputPath, format="orc")
+		df1 = spark.read.orc(inputPath)
+
+	write
+		df3.write.format("orc").save(outputPath)
+		df3.write.save(outputPath, format="orc")
+		df3.write.orc(outputPath)	
+
+
+  CSV (delimited text)
+
+	read
+		df1 = spark.read.format("csv").option("header", True).option("inferSchema", True).load(inputPath)
+		df1 = spark.read.format("csv").load(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True)
+		df1 = spark.read.csv(inputPath, header=True, inferSchema=True, sep="|")
+
+		my_schema = StructType(
+    			[
+        			StructField('ORIGIN_COUNTRY_NAME', StringType(), True), 
+        			StructField('DEST_COUNTRY_NAME', StringType(), True), 
+        			StructField('count', IntegerType(), True)
+    			]
+		)
+
+		# use Apache Hive types
+		my_schema = "ORIGIN_COUNTRY_NAME STRING, DEST_COUNTRY_NAME STRING, count INT"
+
+		// using programmatic schema
+		df1 = spark.read.schema(my_schema).csv(inputPath, header=True)
+
+	write
+		df3.write.format("csv").save(outputPath, header=True)
+		df2.write.csv(outputPath, header=True)
+		df2.write.csv(outputPath, header=True, sep="|", mode="overwrite")
+
+
+  Text
+	read
+		df1 = spark.read.text(inputPath)
+
+	write
+		df1.write.text(outputPath)
+
+
+
 
 
 
