@@ -1,0 +1,101 @@
+
+  Databricks
+  ----------------------------
+   Databricks Basics
+	- Databricks Community basic features
+	- Notebook basics & Magic commands
+	- Databricks Utilities - fs, widgets, notebook   
+   PySpark Essentials
+	- Spark basics
+	- Spark SQL basics
+	- Spark Structured Streaming basic
+   Databricks Lakehouse - Delta Lake
+	– Delta Lake using SQL
+	- Delta Lake using Python
+	- Delta Lake Features
+   ELT with Spark SQL
+	- Querying from files
+	- Writing to tables
+	- Schema Validation & Management
+	- HOFs & UDFs
+   Incremental Data Processing 
+	- COPY INTO command
+	- Structured Streaming
+	- AutoLoader
+	- Medallion Pattern
+   Production pipelines	
+	- Delta Live Tables
+	- Job Workflow
+   Data Governance basics
+	- Unity Catalog
+
+
+  Materials
+  ---------
+   - PDF presentations
+   - Code Modules (PySpark)
+   - Databricks Notebooks (DBC files)
+   - Class notes (PySpark)
+   - Github: 
+	https://github.com/ykanakaraju/pyspark
+	https://github.com/ykanakaraju/databrickscts
+
+
+
+  Getting started with Spark on Databricks Free Edition
+  -----------------------------------------------------
+
+   -> Click on https://www.databricks.com/try-databricks
+   -> Click on "Try Databricks" button (top-right corner)
+   -> Click on "Click here" link towards the bottom
+	** Looking for Databricks Free Edition? Click here
+   -> Provide a valid email address 
+   -> Enter the validation code sent to the email to login to Databricks free edition
+
+	-> Login link: http://login.databricks.com
+
+
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
