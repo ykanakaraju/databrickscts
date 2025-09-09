@@ -824,7 +824,6 @@
     Spark Structured Streaming (pyspark.sql.streaming)
   ======================================================
 
-
    Spark Streaming APIs:
 
 	-> Spark Streaming (DStreams API) built on top of Spark Core
@@ -879,16 +878,6 @@
 	ForEachBatch sink
 	ForEach sink 
 	Memory sink
-
-
-
-
-
-
-
-
-
-
 
 
 
