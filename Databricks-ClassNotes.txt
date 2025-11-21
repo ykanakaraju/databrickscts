@@ -247,8 +247,6 @@
 			|--> Tasks (each task has multiple transformations that run in parallel)
 
 
-
-
   ================================
      Spark SQL (pyspark.sql)
   ================================ 
@@ -922,6 +920,8 @@
 
 	from delta.tables import DeltaTable
 	deltaTable = DeltaTable.forName(spark, "db1.students")
+
+
 
 
 
