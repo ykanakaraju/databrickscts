@@ -9,12 +9,15 @@
    PySpark Essentials
 	- Spark basics
 	- Spark SQL basics
-	- Spark Structured Streaming basics
+	- Structured Streaming basics
+   Databriks Unity Catalog
+	- Unity Catalog
+	- Storage Credentials
+	- External Locations
    Databricks Lakehouse - Delta Lake
-	– Delta Lake using SQL
-	- Delta Lake using Python
+	– Delta Lake using SQL (& Python)
 	- Delta Lake Features
-   ELT with Spark SQL
+   ETL with Spark SQL
 	- Querying from files
 	- Writing to tables
 	- Schema Validation & Schema Management
@@ -23,11 +26,7 @@
 	- COPY INTO command
 	- Structured Streaming
 	- AutoLoader
-	- Medallion Pattern
-   Data Governance
-	- Unity Catalog
-	- Storage Credentials
-	- External Locations
+	- Medallion Pattern   
    Production pipelines	
 	- Lakeflow Declarative Pipelines
 	- Job Workflow
@@ -43,9 +42,9 @@
 	https://github.com/ykanakaraju/pyspark
 	https://github.com/ykanakaraju/databrickscts
 
+
   Spark
   -----
-
     => Spark is in-memory distributed computing framework for big data analytics.
 
 	in-memory: ability to persist intermediate results in RAM and subsequent operations
@@ -74,20 +73,15 @@
 	Graph parallel computations  	-> Spark GraphX
 
 
-  Getting started with Spark
-  -------------------------- 
+  Getting started with Spark with Databricks
+  ------------------------------------------ 
 
-   1. Setting up local dev environment
-
-	Ref URL: https://github.com/ykanakaraju/pyspark/blob/master/Pyspark-JupyterNotebooks-Windows-Setup.pdf  
-	Spark download: https://spark.apache.org/downloads.html
+   -> Databricks Free Edition Account
+   -> Azure Databricks Account
 
 
-   2. Databricks Free Edition (preferred)
-
-
-  Setting up PySpark on Windows machine
-  -------------------------------------
+  Setting up PySpark on Windows (Local Dev Env.)
+  ----------------------------------------------
 
 	1. Install Java 8 or up
 
@@ -156,6 +150,9 @@
 
 	-> Login link: http://login.databricks.com
 
+
+    	Azure Databricks Account Console: 	https://accounts.azuredatabricks.net/
+	AWS Databricks Account Console:		https://accounts.cloud.databricks.com/login
 
 
    Databricks 'dbutils'
@@ -920,7 +917,6 @@
 
 	from delta.tables import DeltaTable
 	deltaTable = DeltaTable.forName(spark, "db1.students")
-
 
 
 
