@@ -1,7 +1,7 @@
 
   Databricks
   ----------------------------
-   Databricks Basics
+   Databricks Platform Basics
 	- Databricks basic features
 	- Notebook basics & Magic commands
 	- Databricks Utilities - fs, widgets, notebook 
@@ -10,13 +10,13 @@
 	- Spark basics
 	- Spark SQL basics
 	- Structured Streaming basics
+   Databricks Lakehouse - Delta Lake
+	– Delta Lake using SQL & Python
+	- Delta Lake Features
    Databriks Unity Catalog
 	- Unity Catalog
 	- Storage Credentials
 	- External Locations
-   Databricks Lakehouse - Delta Lake
-	– Delta Lake using SQL (& Python)
-	- Delta Lake Features
    ETL with Spark SQL
 	- Querying from files
 	- Writing to tables
@@ -25,8 +25,7 @@
    Incremental Data Processing 
 	- COPY INTO command
 	- Structured Streaming
-	- AutoLoader
-	- Medallion Pattern   
+	- AutoLoader	   
    Production pipelines	
 	- Lakeflow Declarative Pipelines
 	- Job Workflow
@@ -39,7 +38,6 @@
    - Databricks Notebooks (DBC files)
    - Class notes (PySpark)
    - Github: 
-	https://github.com/ykanakaraju/pyspark
 	https://github.com/ykanakaraju/databrickscts
 
 
@@ -155,6 +153,16 @@
 	AWS Databricks Account Console:		https://accounts.cloud.databricks.com/login
 
 
+	Azure Free Trial Account
+	------------------------
+	https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account
+
+
+	Login to Azure Databricks Account Console
+	-----------------------------------------
+	https://accounts.azuredatabricks.net/
+
+
    Databricks 'dbutils'
    --------------------
 
@@ -202,8 +210,6 @@
 	-----------------------------------------------------
 	dbutils.fs.rm('/FileStore/testdata3/2011_summary_renamed.csv')
 	dbutils.fs.rm('/FileStore/testdata3/', recurse=True)
-
-
 
 
   Spark Architecture
@@ -292,7 +298,6 @@
 			)
  	
 	
-
    Basic steps in creating a Spark SQL Application
    -----------------------------------------------
 
@@ -917,22 +922,6 @@
 
 	from delta.tables import DeltaTable
 	deltaTable = DeltaTable.forName(spark, "db1.students")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
