@@ -4,8 +4,7 @@
   
   Prerequites: 
   * Setup a UC metastore and assign it to a workspace as described in the previous lab.
-  
-  
+    
   
  1. Login to account console using your Global admin Microsoft Entra ID account
 			
@@ -65,7 +64,7 @@
 		<Access Connector> -> Settings -> Properties -> Id
 		Copy this and store it some where. 	
 		
- 7. Create Azure Datalake Gen2 storage account and a container in it.
+ 7. Create ADLS Gen2 storage account and a container in it.
   
 	7.1 Search for and open 'Storage accounts' and click on '+ Create'
 	
@@ -114,13 +113,13 @@
  9. Create the 'Storage credential' in your Databricks workspace.	
   
 	9.1 Go to Databricks workspace.
-	9.2 Click on 'Catalog' menu -> 'External data' button
-	9.3 Select 'Credentials' tab and click on 'Create credential' button.
-	9.4 Create the 'Storage credential' as follows:
+	9.2 Click on 'Catalog' menu -> 'Connect' dropdown -> 'Credentials' button
+	9.3 Create the 'Storage credential' as follows:
 	
 		Credential Type: Azure Managed Identity
 		Storage credential name: databricks-uc-external-storage-cred
-		Access connector ID: <as copied from step 6.4>
+		Access connector ID: <as copied from step 6.4
+	9.4 Click on 'Permissions' -> 'Grant' and grant required permissions for account users.
 		
 		
  10. Create an external location
