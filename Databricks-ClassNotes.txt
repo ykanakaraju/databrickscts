@@ -30,6 +30,7 @@
 	- Lakeflow Declarative Pipelines
 	- Job Workflow
 
+
   Materials
   ---------
    - PDF presentations
@@ -254,7 +255,7 @@
 
     -> High Level API built on top of Spark Core
 
-	File Formats : Parquet (default), ORC, JSON, CSV (delimited text), Text
+	File Formats : Parquet (default), ORC, JSON, CSV (delimited text), Text, Avro
 	JDBC Format  : RDBMS, NoSQL
 	Hive Format  : Hive Warehouse
 
@@ -929,8 +930,11 @@
 
 
 
+	
 
 
+
+ 
 
 
 
