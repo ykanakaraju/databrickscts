@@ -137,7 +137,7 @@
 
 
 
-  Getting started with Spark on Databricks Free Edition
+  Getting started with Databricks Free Edition
   -----------------------------------------------------
 
    -> Click on https://www.databricks.com/try-databricks
@@ -162,6 +162,12 @@
 	Login to Azure Databricks Account Console
 	-----------------------------------------
 	https://accounts.azuredatabricks.net/
+
+
+	Azure Databricks :: Enabling DBFS File Browser
+	----------------------------------------------
+	Account icon (top-right) -> Settings -> Advanced -> Other -> DBFS File browser -> Put it On state
+	Upload files to /FileStore directory
 
 
    Databricks 'dbutils'
@@ -930,11 +936,19 @@
 
 
 
+
+
+	 
+
+
+
 	
 
 
 
- 
+
+
+
 
 
 
